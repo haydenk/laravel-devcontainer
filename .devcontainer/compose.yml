@@ -24,27 +24,11 @@ services:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
 
-  mailcatcher:
-    image: sj26/mailcatcher
-    ports:
-      - "1080:1080"
-      - "1025:1025"
-    networks:
-    - laravel
-
-  mailhog:
-    image: mailhog/mailhog
-    ports:
-      - "8025:8025"
-      - "2025:1025"
-    networks:
-    - laravel
-
   mailpit:
     image: axllent/mailpit
     ports:
-      - "8825:8025"
-      - "3025:1025"
+      - "8025:8025"
+      - "1025:1025"
     networks:
     - laravel
 
