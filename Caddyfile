@@ -1,0 +1,85 @@
+{
+	# Global options
+	admin off
+	auto_https off
+	log {
+		output stderr
+		level DEBUG
+	}
+}
+
+:8000 {
+	root * {env.workspaceFolder}/public
+
+	# Add a health check endpoint for Codespaces
+	handle /health {
+		respond "OK" 200
+	}
+
+	header {
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer-when-downgrade
+		# Referrer-Policy "strict-origin-when-cross-origin"
+
+		# enable HSTS
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+		# Enable cross-site filter (XSS) and tell browser to block detected attacks
+		X-Xss-Protection "1; mode=block"
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options "nosniff"
+
+		# clickjacking protection
+		X-Frame-Options "SAMEORIGIN"
+
+		# Disabled for local development on Safari
+		# Content-Security-Policy "upgrade-insecure-requests"
+		Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.plot.ly https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com http://cdn.ckeditor.com; script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.plot.ly https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com http://cdn.ckeditor.com https://api.mailgun.net https://code.jquery.com https://cdnjs.cloudflare.com https://maxcdn.bootstrapcdn.com"
+
+		# hide server name
+		-Server Caddy
+		-X-Powered-By
+	}
+
+	encode gzip zstd
+
+	# Check if running in Codespaces
+	@is_codespaces {
+		expression `{env.CODESPACES} == "true"`
+		header X-Forwarded-Host "*.app.github.dev"
+	}
+
+	php_fastcgi unix//tmp/php-fpm.sock {
+		# Split path information from the path into PATH_INFO as well
+		split .php
+	}
+
+	handle @is_codespaces {
+		php_fastcgi unix//tmp/php-fpm.sock {
+			# Split path information from the path into PATH_INFO as well
+			split .php
+
+			header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+			header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+			header_up X-Forwarded-Host {http.request.header.X-Forwarded-Host}
+		}
+	}
+
+	# Try files in this order - useful for WordPress and similar apps
+	try_files {path} {path}/index.php index.php
+
+	# Handle errors
+	handle_errors {
+		respond "{http.error.status_code} {http.error.status_text}"
+	}
+
+	# Handle cache headers for static assets
+	@static {
+		path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2
+	}
+	header @static Cache-Control "public, max-age=31536000"
+
+	# Serve static files directly
+	file_server
+}
