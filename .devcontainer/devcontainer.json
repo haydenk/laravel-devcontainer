@@ -22,6 +22,40 @@
     "ghcr.io/rails/devcontainer/features/sqlite3": {},
     "ghcr.io/devcontainers/features/ruby:1": {}
   },
+  "forwardPorts": [
+    1080,
+    8025,
+    8825,
+    1025,
+    5432,
+    5050
+  ],
+  "portsAttributes": {
+    "1080": {
+      "label": "Mailcatcher Web UI",
+      "onAutoForward": "notify"
+    },
+    "1025": {
+      "label": "Mailcatcher SMTP",
+      "onAutoForward": "notify"
+    },
+    "8025": {
+      "label": "Mailhog Web UI",
+      "onAutoForward": "notify"
+    },
+    "8825": {
+      "label": "Mailpit Web UI",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "Postgresql",
+      "onAutoForward": "notify"
+    },
+    "5050": {
+      "label": "pgAdmin",
+      "onAutoForward": "notify"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
