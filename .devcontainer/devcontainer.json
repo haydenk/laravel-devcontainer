@@ -1,0 +1,56 @@
+{
+  "name": "Laravel App",
+  "dockerComposeFile": "compose.yml",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "128gb"
+  },
+  "service": "php-app",
+  "containerUser": "vscode",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopCompose",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/rails/devcontainer/features/postgres-client": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/rails/devcontainer/features/bun:latest": {},
+    "ghcr.io/rails/devcontainer/features/sqlite3": {},
+    "ghcr.io/devcontainers/features/ruby:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-json",
+        "bmewburn.vscode-intelephense-client",
+        "bradlc.vscode-tailwindcss",
+        "formulahendry.auto-rename-tag",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "onecentlin.laravel-blade",
+        "ryannaddy.laravel-artisan",
+        "codingyu.laravel-goto-view",
+        "amiralizadeh9480.laravel-extra-intellisense"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/usr/bin/zsh",
+        "php.suggest.basic": false,
+        "php.executablePath": "/usr/local/bin/php",
+        "intelephense.files.maxSize": 5000000,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll": true
+        },
+        "files.associations": {
+          "*.blade.php": "blade"
+        }
+      }
+    }
+  }
+}

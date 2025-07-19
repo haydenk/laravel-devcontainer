@@ -1,0 +1,74 @@
+services:
+  php-app:
+    build:
+      dockerfile: Dockerfile
+    entrypoint: ""
+    command: "sleep infinity"
+    volumes:
+      - ${PWD}:/workspaces:cached
+    networks:
+      - laravel
+    environment:
+      TZ: ${TIME_ZONE-UTC}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.1
+    restart: unless-stopped
+    networks:
+    - laravel
+    volumes:
+    - postgres:/var/lib/postgresql/data
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+
+  mailcatcher:
+    image: sj26/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+    - laravel
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+      - "2025:1025"
+    networks:
+    - laravel
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8825:8025"
+      - "3025:1025"
+    networks:
+    - laravel
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@laravel.org
+      PGADMIN_DEFAULT_PASSWORD: laravel
+      PGADMIN_LISTEN_PORT: 80
+      PGADMIN_CONFIG_WTF_CSRF_HEADERS: '["Referer", "Origin"]'
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
+    ports:
+      - 5050:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+    - laravel
+    depends_on:
+      - postgres
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
